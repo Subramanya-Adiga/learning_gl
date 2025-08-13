@@ -8,7 +8,7 @@ struct Shader{
 
     void load_from_file(std::string_view veretex,std::string_view fragement);
 
-    void use_shader();
+    void use_shader() const;
 
     void delete_shader();
 
