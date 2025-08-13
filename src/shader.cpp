@@ -38,9 +38,20 @@ void Shader::load_from_file(std::string_view vertex,
     glDeleteShader(frag_shader);
 
     glDeleteShader(shader_id);
+
+    shader_id = 0;
+    vert_shader = 0;
+    frag_shader = 0;
   }
   glDeleteShader(vert_shader);
   glDeleteShader(frag_shader);
+}
+
+void Shader::use_shader() const { glUseProgram(shader_id); }
+
+void Shader::delete_shader() {
+  glDeleteProgram(shader_id);
+  shader_id = 0;
 }
 
 uint32_t Shader::process_shader(const char *source, GLenum shader_type) {
@@ -59,6 +70,7 @@ uint32_t Shader::process_shader(const char *source, GLenum shader_type) {
     std::print("{}\n", err_log.data());
 
     glDeleteShader(shader);
+    shader = 0;
   }
 
   return shader;
