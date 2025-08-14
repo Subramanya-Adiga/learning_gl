@@ -1,7 +1,6 @@
 #include "sdl_imgui_gl.hpp"
-#include <glad/glad.h>
 #include "shader.hpp"
-#include <print>
+#include <glad/glad.h>
 
 static constexpr SDL_FColor clear_color = {
     .r = 0.298F, .g = 0.300F, .b = 0.297F, .a = 1.0F};
@@ -15,10 +14,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   bool done = false;
 
   float vertices[] = {
-      0.5F, 0.5F, 0.0F,  1.0F, 0.5F,  0.8F,  
-      0.5f, -0.5F, 0.0F, 0.8F, 1.0F,  0.5F, 
-      -0.5F, -0.5F, 0.0F, 0.5F, 0.8F, 1.0F, 
-      -0.5F, 0.5F, 0.0F,  1.0F,  0.8F, 0.5F,
+      0.5F, 0.5F, 0.0F,  1.0F, 0.5F,  0.8F,  0.5f, -0.5F,
+      0.0F, 0.8F, 1.0F,  0.5F, -0.5F, -0.5F, 0.0F, 0.5F,
+      0.8F, 1.0F, -0.5F, 0.5F, 0.0F,  1.0F,  0.8F, 0.5F,
   };
 
   unsigned int indecies[] = {0, 2, 6, 2, 4, 6};
@@ -45,41 +43,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
                         (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-  auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
-  glCompileShader(vertex_shader);
-
-  int success;
-  char infolog[512];
-  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-  if (success == 0) {
-    glGetShaderInfoLog(vertex_shader, 512, nullptr, infolog);
-    std::print("{}\n", infolog);
-  }
-
-  auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_shader_source, nullptr);
-  glCompileShader(fragment_shader);
-
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-  if (success == 0) {
-    glGetShaderInfoLog(fragment_shader, 512, nullptr, infolog);
-    std::print("{}\n", infolog);
-  }
-
-  auto shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program);
-
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-  if (success == 0) {
-    glGetProgramInfoLog(shader_program, 512, nullptr, infolog);
-    std::print("{}\n", infolog);
-  }
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
+  Shader shader = {};
+  shader.load_from_file("vertex.vert", "fragment.frag");
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
@@ -91,7 +56,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shader_program);
+    shader.use_shader();
     glBindVertexArray(vao);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -102,7 +67,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   glDeleteBuffers(1, &vao);
   glDeleteBuffers(1, &buffer_id);
   glDeleteBuffers(1, &ebo);
-  glDeleteProgram(shader_program);
+  shader.delete_shader();
 
   deinit_sdl(&ctx);
   return 0;

@@ -145,12 +145,11 @@ std::string file_handle_helper::read_u32_string(file_handle &handle,
   return {};
 }
 
-std::string read_string(file_handle &handle, uint64_t size){
+std::string file_handle_helper::read_string(file_handle &handle,
+                                            uint64_t size) {
   std::vector<uint8_t> buffer(size);
-  if (fread(buffer.data(), 1, size, &*handle) == size) {
-    return {buffer.begin(), buffer.end()};
-  }
-  return {};
+  fread(buffer.data(), 1, size, &*handle);
+  return {buffer.begin(), buffer.end()};
 }
 
 size_t file_handle_helper::write_u8(file_handle &handle, uint8_t value) {
