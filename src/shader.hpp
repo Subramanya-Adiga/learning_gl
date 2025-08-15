@@ -1,12 +1,11 @@
 #pragma once
-#include <cstdint>
 #include <string_view>
 #include <glad/glad.h>
 
 struct Shader{
     uint32_t shader_id;
 
-    void load_from_file(std::string_view vertex,std::string_view fragement);
+    void load_from_file(std::string_view vertex,std::string_view fragment);
 
     void use_shader() const;
 

@@ -41,6 +41,10 @@ target_precompile_headers(
   <iostream>
   <tuple>
   <variant>
+  <print>
+  <bit>
+  <cstdint>
+  <cstring>
   <range/v3/all.hpp>)
 
 find_package(range-v3 REQUIRED)

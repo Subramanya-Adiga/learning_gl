@@ -1,7 +1,7 @@
 #include "sdl_imgui_gl.hpp"
 // #include <backends/imgui_impl_opengl3.h>
 // #include <backends/imgui_impl_sdl3.h>
-#include <glad/glad.h>
+#include <SDL3/SDL_video.h>
 #include <print>
 
 SDLContext init_sdl(const char *name, int32_t width, int32_t height) {
@@ -32,18 +32,23 @@ void init_audio(SDLContext *ctx) {
     std::print("SDL Failed To Create Audio Stream {}\n", SDL_GetError());
   }
   if (ctx->audio_stream != nullptr) {
-    SDL_ResumeAudioStreamDevice(ctx->audio_stream);
+    sdl_check(SDL_ResumeAudioStreamDevice(ctx->audio_stream));
   }
 }
 
-void init_gl(SDLContext *ctx) {
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+ void init_gl(SDLContext *ctx, bool enable_debug) {
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0));
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                                SDL_GL_CONTEXT_PROFILE_CORE));
+  if (enable_debug) {
+    sdl_check(
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG));
+  }
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4));
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6));
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1));
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24));
+  sdl_check(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8));
 
   ctx->gl_context = SDL_GL_CreateContext(ctx->window);
   if (ctx->gl_context == nullptr) {
@@ -52,8 +57,8 @@ void init_gl(SDLContext *ctx) {
     return;
   }
 
-  SDL_GL_MakeCurrent(ctx->window, ctx->gl_context);
-  SDL_GL_SetSwapInterval(1);
+  sdl_check(SDL_GL_MakeCurrent(ctx->window, ctx->gl_context));
+  sdl_check(SDL_GL_SetSwapInterval(1));
 
   // GLAD Load Protocals
   if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) == 0) {
@@ -64,9 +69,28 @@ void init_gl(SDLContext *ctx) {
     std::print("SDL Version: {}\nOPENGL Version: {}.{}\nGLSL Version: "
                "{}\nOPENGL Vendor: {}\nOPENGL Rendrer: {}\n",
                SDL_GetVersion(), GLVersion.major, GLVersion.minor,
-               (char *)glGetString(GL_SHADING_LANGUAGE_VERSION),
-               (char *)glGetString(GL_VENDOR),
-               (char *)glGetString(GL_RENDERER));
+               std::bit_cast<char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)),
+               std::bit_cast<char *>(glGetString(GL_VENDOR)),
+               std::bit_cast<char *>(glGetString(GL_RENDERER)));
+  }
+}
+
+ void gl_debug_function(GLDEBUGPROC debug_function) {
+  int flags = {};
+  glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+  if ((flags & GL_CONTEXT_FLAG_DEBUG_BIT) != 0) {
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(debug_function, nullptr);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr,
+                          GL_TRUE);
+  }
+}
+
+void sdl_check(bool value) {
+  if (!value) {
+    std::print("SDL Returned Error {}\n", SDL_GetError());
+    return;
   }
 }
 
@@ -107,7 +131,7 @@ void deinit_audio(SDLContext *ctx) {
 }
 
 void deinit_sdl(SDLContext *ctx) {
-  SDL_GL_DestroyContext(ctx->gl_context);
+  sdl_check(SDL_GL_DestroyContext(ctx->gl_context));
   SDL_DestroyWindow(ctx->window);
   SDL_Quit();
 }
