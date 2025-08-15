@@ -1,3 +1,4 @@
+#include "buffer.hpp"
 #include "sdl_imgui_gl.hpp"
 #include "shader.hpp"
 #include <glad/glad.h>
@@ -30,16 +31,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  uint32_t buffer_id = {};
-  glGenBuffers(1, &buffer_id);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  VertexBuffer vbo = {};
+  vbo.create(sizeof(vertices), vertices);
+  vbo.bind();
 
-  uint32_t ebo = {};
-  glGenBuffers(1, &ebo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indecies), indecies,
-               GL_STATIC_DRAW);
+  IndexBuffer ibo = {};
+  ibo.create(6, indecies);
+  ibo.bind();
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
@@ -50,8 +48,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   Shader shader = {};
   shader.load_from_file("vertex.vert", "fragment.frag");
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
 
   while (!done) {
     SDL_Event e = {};
@@ -70,8 +66,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   }
 
   glDeleteBuffers(1, &vao);
-  glDeleteBuffers(1, &buffer_id);
-  glDeleteBuffers(1, &ebo);
+  vbo.destroy();
+  ibo.destroy();
   shader.delete_shader();
 
   deinit_sdl(&ctx);

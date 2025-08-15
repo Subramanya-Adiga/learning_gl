@@ -36,7 +36,7 @@ void init_audio(SDLContext *ctx) {
   }
 }
 
- void init_gl(SDLContext *ctx, bool enable_debug) {
+void init_gl(SDLContext *ctx, bool enable_debug) {
   sdl_check(SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0));
   sdl_check(SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                                 SDL_GL_CONTEXT_PROFILE_CORE));
@@ -75,7 +75,7 @@ void init_audio(SDLContext *ctx) {
   }
 }
 
- void gl_debug_function(GLDEBUGPROC debug_function) {
+void gl_debug_function(GLDEBUGPROC debug_function) {
   int flags = {};
   glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
   if ((flags & GL_CONTEXT_FLAG_DEBUG_BIT) != 0) {
