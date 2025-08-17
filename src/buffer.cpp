@@ -1,4 +1,5 @@
 #include "buffer.hpp"
+#include <glad/glad.h>
 
 void VertexBuffer::create(uint32_t size, float *data) {
   glCreateBuffers(1, &id);

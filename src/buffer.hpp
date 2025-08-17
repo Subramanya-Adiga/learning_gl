@@ -1,24 +1,25 @@
 #pragma once
-#include <glad/glad.h>
+#include "buffer_layout.hpp"
 
-struct VertexBuffer{
-    uint32_t id = {};
+struct VertexBuffer {
+  uint32_t id = {};
+  BufferLayout layout = {};
 
-    void create(uint32_t size,float* data);
+  void create(uint32_t size, float *data);
 
-    void bind()const;
-    void unbind()const;
+  void bind() const;
+  void unbind() const;
 
-    void destroy();
+  void destroy();
 };
 
-struct IndexBuffer{
-    uint32_t id = {};
+struct IndexBuffer {
+  uint32_t id = {};
 
-    void create(uint32_t count,uint32_t* data);
+  void create(uint32_t count, uint32_t *data);
 
-    void bind()const;
-    void unbind()const;
+  void bind() const;
+  void unbind() const;
 
-    void destroy();
+  void destroy();
 };

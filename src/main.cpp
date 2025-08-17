@@ -20,12 +20,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   bool done = false;
 
   float vertices[] = {
-      0.5F, 0.5F, 0.0F,  1.0F, 0.5F,  0.8F,  0.5f, -0.5F,
-      0.0F, 0.8F, 1.0F,  0.5F, -0.5F, -0.5F, 0.0F, 0.5F,
-      0.8F, 1.0F, -0.5F, 0.5F, 0.0F,  1.0F,  0.8F, 0.5F,
+      /*vert*/ 0.5F,  0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F,
+      /*vert*/ 0.5f,  -0.5F, 0.0F, /*color*/ 0.8F, 1.0F, 0.5F, 1.0F,
+      /*vert*/ -0.5F, -0.5F, 0.0F, /*color*/ 0.5F, 0.8F, 1.0F, 1.0F,
+      /*vert*/ -0.5F, 0.5F,  0.0F, /*color*/ 1.0F, 0.8F, 0.5F, 1.0F,
   };
 
-  unsigned int indecies[] = {0, 2, 6, 2, 4, 6};
+  unsigned int indecies[] = {0, 1, 3, 1, 2, 3};
 
   uint32_t vao = {};
   glGenVertexArrays(1, &vao);
@@ -33,18 +34,21 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   VertexBuffer vbo = {};
   vbo.create(sizeof(vertices), vertices);
+  vbo.layout = {{.type = DataType::Float3, .name = "apos"},
+                {.type = DataType::Float4, .name = "aColor"}};
   vbo.bind();
 
   IndexBuffer ibo = {};
   ibo.create(6, indecies);
   ibo.bind();
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
+  for (int i = 0; i < vbo.layout.elements.size(); i++) {
+    glEnableVertexAttribArray(i);
+    glVertexAttribPointer(i, vbo.layout.elements[i].component_count,
+                          vbo.layout.elements[i].gl_type, GL_FALSE,
+                          vbo.layout.stride,
+                          (const void *)vbo.layout.elements[i].offset);
+  }
 
   Shader shader = {};
   shader.load_from_file("vertex.vert", "fragment.frag");
