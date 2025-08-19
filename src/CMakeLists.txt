@@ -14,6 +14,8 @@ target_sources(
           sdl_imgui_gl.cpp
           file_utils.hpp
           file_utils.cpp
+          image_utils.cpp
+          image_utils.hpp
           shader.hpp
           shader.cpp
           buffer.cpp

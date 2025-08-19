@@ -1,15 +1,20 @@
-#pragma once 
+#pragma once
 #include "buffer.hpp"
 
-struct VertexArray{
-    uint32_t id = {};
-    VertexBuffer vbo = {};
-    IndexBuffer ibo = {};
+class VertexArray {
+public:
+  uint32_t id = {};
+  VertexBuffer vbo = {};
+  IndexBuffer ibo = {};
 
-    void create();
-    
-    void bind();
-    void unbind();
+  void create();
+  void process_buffers();
 
-    void destroy();
+  void bind();
+  void unbind();
+
+  void destroy();
+
+private:
+  uint32_t v_buffer_count = {};
 };

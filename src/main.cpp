@@ -1,57 +1,73 @@
 #include "buffer.hpp"
+#include "buffer_layout.hpp"
+#include "image_utils.hpp"
 #include "sdl_imgui_gl.hpp"
 #include "shader.hpp"
+#include "vertex_array.hpp"
 #include <glad/glad.h>
 #include <print>
 
 static constexpr SDL_FColor clear_color = {
     .r = 0.298F, .g = 0.300F, .b = 0.297F, .a = 1.0F};
 
-static bool process_event(SDL_Event * /*e*/);
+namespace {
+
 void APIENTRY debug_output(GLenum source, GLenum type, unsigned int id,
                            GLenum severity, GLsizei length, const char *message,
                            const void *userParam);
+static bool process_event(SDL_Event * /*e*/);
+
+float vertices[] = {
+    /*vert*/ 0.5F,  0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F, /*TexCord*/ 1.0F, 1.0F,
+    /*vert*/ 0.5F,  -0.5F, 0.0F, /*color*/ 0.8F, 1.0F, 0.5F, 1.0F, /*TexCord*/ 1.0F, 0.0F,
+    /*vert*/ -0.5F, -0.5F, 0.0F, /*color*/ 0.5F, 0.8F, 1.0F, 1.0F, /*TexCord*/ 0.0F, 0.0F,
+    /*vert*/ -0.5F, 0.5F,  0.0F, /*color*/ 1.0F, 0.8F, 0.5F, 1.0F, /*TexCord*/ 0.0F, 1.0F,
+};
+
+uint32_t indecies[] = {0, 1, 3, 1, 2, 3};
+} // namespace
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+  auto image_data = image_load("wall.jpg");
+
   auto ctx = init_sdl("learning_opengl", 1280, 720);
   init_gl(&ctx, true);
   gl_debug_function(debug_output);
 
   bool done = false;
 
-  float vertices[] = {
-      /*vert*/ 0.5F,  0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F,
-      /*vert*/ 0.5f,  -0.5F, 0.0F, /*color*/ 0.8F, 1.0F, 0.5F, 1.0F,
-      /*vert*/ -0.5F, -0.5F, 0.0F, /*color*/ 0.5F, 0.8F, 1.0F, 1.0F,
-      /*vert*/ -0.5F, 0.5F,  0.0F, /*color*/ 1.0F, 0.8F, 0.5F, 1.0F,
-  };
-
-  unsigned int indecies[] = {0, 1, 3, 1, 2, 3};
-
-  uint32_t vao = {};
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
+  VertexArray vao = {};
+  vao.create();
 
   VertexBuffer vbo = {};
   vbo.create(sizeof(vertices), vertices);
   vbo.layout = {{.type = DataType::Float3, .name = "apos"},
-                {.type = DataType::Float4, .name = "aColor"}};
-  vbo.bind();
+                {.type = DataType::Float4, .name = "aColor"},
+                {.type = DataType::Float2, .name = "aTexCord"}};
 
   IndexBuffer ibo = {};
   ibo.create(6, indecies);
-  ibo.bind();
 
-  for (int i = 0; i < vbo.layout.elements.size(); i++) {
-    glEnableVertexAttribArray(i);
-    glVertexAttribPointer(i, vbo.layout.elements[i].component_count,
-                          vbo.layout.elements[i].gl_type, GL_FALSE,
-                          vbo.layout.stride,
-                          (const void *)vbo.layout.elements[i].offset);
-  }
+  vao.vbo = std::move(vbo);
+  vao.ibo = ibo;
+
+  vao.process_buffers();
 
   Shader shader = {};
   shader.load_from_file("vertex.vert", "fragment.frag");
+
+  uint32_t tex_id = {};
+  glGenTextures(1, &tex_id);
+  glBindTexture(GL_TEXTURE_2D, tex_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image_data.width, image_data.height,
+               0, GL_RGB, GL_UNSIGNED_BYTE, image_data.data_pointer);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   while (!done) {
     SDL_Event e = {};
@@ -62,23 +78,23 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader.use_shader();
-    glBindVertexArray(vao);
+    vao.bind();
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vao.ibo.count),
+                   GL_UNSIGNED_INT, nullptr);
 
     SDL_GL_SwapWindow(ctx.window);
   }
 
-  glDeleteBuffers(1, &vao);
-  vbo.destroy();
-  ibo.destroy();
+  vao.destroy();
   shader.delete_shader();
-
+  destroy_image(image_data);
   deinit_sdl(&ctx);
   return 0;
 }
 
-static bool process_event(SDL_Event *e) {
+namespace {
+bool process_event(SDL_Event *e) {
   while (SDL_PollEvent(e)) {
     switch (e->type) {
     case SDL_EVENT_QUIT: {
@@ -190,3 +206,4 @@ void APIENTRY debug_output(GLenum source, GLenum type, unsigned int id,
   }
   std::print("Debug Message ID: [{}] \n Debug Message: {}\n", id, message);
 }
+} // namespace

@@ -10,16 +10,17 @@ struct VertexBuffer {
   void bind() const;
   void unbind() const;
 
-  void destroy();
+  void destroy() const;
 };
 
 struct IndexBuffer {
   uint32_t id = {};
+  uint32_t count = {};
 
   void create(uint32_t count, uint32_t *data);
 
   void bind() const;
   void unbind() const;
 
-  void destroy();
+  void destroy() const;
 };
