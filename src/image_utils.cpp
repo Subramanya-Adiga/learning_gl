@@ -50,10 +50,10 @@ ImageData image_load(std::string_view name) {
 
   return {
       .format = format,
-      .data_pointer = data,
       .width = static_cast<uint32_t>(x),
       .height = static_cast<uint32_t>(y),
       .size = static_cast<uint32_t>(image_size),
+      .data_pointer = data,
   };
 }
 

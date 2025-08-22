@@ -10,10 +10,10 @@ enum class ImagePixelFormat : uint8_t {
 
 struct ImageData {
   ImagePixelFormat format = {};
-  uint8_t *data_pointer = nullptr;
   uint32_t width = 0;
   uint32_t height = 0;
   uint32_t size = 0;
+  uint8_t *data_pointer = nullptr;
 };
 
 [[nodiscard]] ImageData image_load(std::string_view name);

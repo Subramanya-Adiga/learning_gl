@@ -3,6 +3,7 @@
 #include "image_utils.hpp"
 #include "sdl_imgui_gl.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
 #include "vertex_array.hpp"
 #include <glad/glad.h>
 #include <print>
@@ -56,18 +57,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Shader shader = {};
   shader.load_from_file("vertex.vert", "fragment.frag");
 
-  uint32_t tex_id = {};
-  glGenTextures(1, &tex_id);
-  glBindTexture(GL_TEXTURE_2D, tex_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image_data.width, image_data.height,
-               0, GL_RGB, GL_UNSIGNED_BYTE, image_data.data_pointer);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  Texture tex={};
+  tex.create_texture();
+  tex.update_texture(image_data);
 
   while (!done) {
     SDL_Event e = {};
@@ -77,6 +69,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    tex.bind();
     shader.use_shader();
     vao.bind();
 
@@ -88,6 +81,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   vao.destroy();
   shader.delete_shader();
+  tex.destroy_texture();
   destroy_image(image_data);
   deinit_sdl(&ctx);
   return 0;

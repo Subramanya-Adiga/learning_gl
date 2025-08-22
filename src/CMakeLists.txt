@@ -23,7 +23,9 @@ target_sources(
           buffer_layout.hpp
           buffer_layout.cpp
           vertex_array.cpp
-          vertex_array.hpp)
+          vertex_array.hpp
+          texture.cpp
+          texture.hpp)
 
 target_include_directories(gl_learn PRIVATE "${CMAKE_SOURCE_DIR}/vendor/stb")
 
