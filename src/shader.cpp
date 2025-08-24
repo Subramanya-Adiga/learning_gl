@@ -9,6 +9,9 @@ void Shader::load_from_file(std::string_view vertex,
                                [](FILE *fhandle) { fclose(fhandle); });
   auto vert_size = file_handle_helper::file_size(vert_file);
   auto vert_source = file_handle_helper::read_string(vert_file, vert_size);
+  if (vert_source.empty()) {
+    std::print("Vertex Shader Source File Is Empty\nFileName: {}\n", vertex);
+  }
   const auto *vert_p = vert_source.c_str();
   auto vert_shader = process_shader(vert_p, GL_VERTEX_SHADER);
 
@@ -16,30 +19,34 @@ void Shader::load_from_file(std::string_view vertex,
                                [](FILE *fhandle) { fclose(fhandle); });
   auto frag_size = file_handle_helper::file_size(frag_file);
   auto frag_source = file_handle_helper::read_string(frag_file, frag_size);
+  if (frag_source.empty()) {
+    std::print("Fragment Shader Source File Is Empty\nFileName: {}\n",
+               fragment);
+  }
   const auto *frag_p = frag_source.c_str();
   auto frag_shader = process_shader(frag_p, GL_FRAGMENT_SHADER);
 
-  shader_id = glCreateProgram();
-  glAttachShader(shader_id, vert_shader);
-  glAttachShader(shader_id, frag_shader);
-  glLinkProgram(shader_id);
+  id = glCreateProgram();
+  glAttachShader(id, vert_shader);
+  glAttachShader(id, frag_shader);
+  glLinkProgram(id);
 
   int success = {};
-  glGetProgramiv(shader_id, GL_LINK_STATUS, &success);
+  glGetProgramiv(id, GL_LINK_STATUS, &success);
   if (success == 0) {
     int max_length = {};
-    glGetProgramiv(shader_id, GL_INFO_LOG_LENGTH, &max_length);
+    glGetProgramiv(id, GL_INFO_LOG_LENGTH, &max_length);
 
     std::vector<char> err_log(max_length);
-    glGetShaderInfoLog(shader_id, max_length, &max_length, err_log.data());
-    std::print("{}\n", err_log.data());
+    glGetProgramInfoLog(id, max_length, &max_length, err_log.data());
+    std::print("{:-^50}\nLinkerError\nLinkError\n{}\n", "-", err_log.data());
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    glDeleteShader(shader_id);
+    glDeleteShader(id);
 
-    shader_id = 0;
+    id = 0;
     vert_shader = 0;
     frag_shader = 0;
   }
@@ -47,11 +54,11 @@ void Shader::load_from_file(std::string_view vertex,
   glDeleteShader(frag_shader);
 }
 
-void Shader::use_shader() const { glUseProgram(shader_id); }
+void Shader::use() const { glUseProgram(id); }
 
-void Shader::delete_shader() {
-  glDeleteProgram(shader_id);
-  shader_id = 0;
+void Shader::destroy() {
+  glDeleteProgram(id);
+  id = 0;
 }
 
 uint32_t Shader::process_shader(const char *source, GLenum shader_type) {
@@ -67,7 +74,7 @@ uint32_t Shader::process_shader(const char *source, GLenum shader_type) {
 
     std::vector<char> err_log(max_length);
     glGetShaderInfoLog(shader, max_length, &max_length, err_log.data());
-    std::print("{}\n", err_log.data());
+    std::print("{:-^50}\nCompileError\n{}\n", "-", err_log.data());
 
     glDeleteShader(shader);
     shader = 0;

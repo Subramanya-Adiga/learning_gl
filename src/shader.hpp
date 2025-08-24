@@ -3,13 +3,13 @@
 #include <string_view>
 
 struct Shader {
-  uint32_t shader_id;
+  uint32_t id = {};
 
   void load_from_file(std::string_view vertex, std::string_view fragment);
 
-  void use_shader() const;
+  void use() const;
 
-  void delete_shader();
+  void destroy();
 
   static uint32_t process_shader(const char *source, GLenum shader_type);
 };

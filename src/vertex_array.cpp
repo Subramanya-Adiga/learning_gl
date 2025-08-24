@@ -1,4 +1,5 @@
 #include "vertex_array.hpp"
+#include <cassert>
 #include <glad/glad.h>
 
 void VertexArray::create() { glCreateVertexArrays(1, &id); }
@@ -36,24 +37,28 @@ void VertexArray::process_buffers() {
           (const void *)(layout.offset));
       v_buffer_count++;
       break;
-    } break;
+    }
+    default:
+      assert(false);
+      break;
     }
   }
+  glBindVertexArray(0);
 }
 
-void VertexArray::bind() {
+void VertexArray::bind() const {
   glBindVertexArray(id);
   vbo.bind();
   ibo.bind();
 }
 
-void VertexArray::unbind() {
+void VertexArray::unbind() const {
   glBindVertexArray(0);
   vbo.unbind();
   ibo.unbind();
 }
 
-void VertexArray::destroy() {
+void VertexArray::destroy() const {
   glDeleteVertexArrays(1, &id);
   vbo.destroy();
   ibo.destroy();

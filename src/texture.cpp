@@ -24,7 +24,7 @@ uint32_t texture_slot_count() {
   return count;
 }
 
-void Texture::create_texture() {
+void Texture::create() {
   glCreateTextures(GL_TEXTURE_2D, 1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
 
@@ -32,9 +32,10 @@ void Texture::create_texture() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::update_texture(const ImageData &data) {
+void Texture::update(const ImageData &data) const {
   glBindTexture(GL_TEXTURE_2D, id);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(data.width),
                static_cast<GLsizei>(data.height), 0,
@@ -43,8 +44,8 @@ void Texture::update_texture(const ImageData &data) {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::bind() { glBindTexture(GL_TEXTURE_2D, id); }
+void Texture::bind() const { glBindTexture(GL_TEXTURE_2D, id); }
 
-void Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
+void Texture::unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
 
-void Texture::destroy_texture() { glDeleteTextures(1, &id); }
+void Texture::destroy() { glDeleteTextures(1, &id); }

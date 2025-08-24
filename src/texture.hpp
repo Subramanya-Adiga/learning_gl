@@ -6,11 +6,11 @@
 struct Texture {
   uint32_t id = {};
 
-  void create_texture();
-  void update_texture(const ImageData &data);
+  void create();
+  void update(const ImageData &data) const;
 
-  void bind();
-  void unbind();
+  void bind() const;
+  void unbind() const;
 
-  void destroy_texture();
+  void destroy();
 };

@@ -19,10 +19,14 @@ void APIENTRY debug_output(GLenum source, GLenum type, unsigned int id,
 static bool process_event(SDL_Event * /*e*/);
 
 float vertices[] = {
-    /*vert*/ 0.5F,  0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F, /*TexCord*/ 1.0F, 1.0F,
-    /*vert*/ 0.5F,  -0.5F, 0.0F, /*color*/ 0.8F, 1.0F, 0.5F, 1.0F, /*TexCord*/ 1.0F, 0.0F,
-    /*vert*/ -0.5F, -0.5F, 0.0F, /*color*/ 0.5F, 0.8F, 1.0F, 1.0F, /*TexCord*/ 0.0F, 0.0F,
-    /*vert*/ -0.5F, 0.5F,  0.0F, /*color*/ 1.0F, 0.8F, 0.5F, 1.0F, /*TexCord*/ 0.0F, 1.0F,
+    /*vert*/ 0.5F,    0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F,
+    /*TexCord*/ 1.0F, 1.0F,
+    /*vert*/ 0.5F,    -0.5F, 0.0F, /*color*/ 0.8F, 1.0F, 0.5F, 1.0F,
+    /*TexCord*/ 1.0F, 0.0F,
+    /*vert*/ -0.5F,   -0.5F, 0.0F, /*color*/ 0.5F, 0.8F, 1.0F, 1.0F,
+    /*TexCord*/ 0.0F, 0.0F,
+    /*vert*/ -0.5F,   0.5F,  0.0F, /*color*/ 1.0F, 0.8F, 0.5F, 1.0F,
+    /*TexCord*/ 0.0F, 1.0F,
 };
 
 uint32_t indecies[] = {0, 1, 3, 1, 2, 3};
@@ -57,9 +61,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   Shader shader = {};
   shader.load_from_file("vertex.vert", "fragment.frag");
 
-  Texture tex={};
-  tex.create_texture();
-  tex.update_texture(image_data);
+  Texture tex = {};
+  tex.create();
+  tex.update(image_data);
 
   while (!done) {
     SDL_Event e = {};
@@ -70,7 +74,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     tex.bind();
-    shader.use_shader();
+    shader.use();
     vao.bind();
 
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vao.ibo.count),
@@ -80,8 +84,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   }
 
   vao.destroy();
-  shader.delete_shader();
-  tex.destroy_texture();
+  shader.destroy();
+  tex.destroy();
   destroy_image(image_data);
   deinit_sdl(&ctx);
   return 0;
@@ -198,6 +202,7 @@ void APIENTRY debug_output(GLenum source, GLenum type, unsigned int id,
     std::print("Unknown Severity Type\n");
     break;
   }
-  std::print("Debug Message ID: [{}] \n Debug Message: {}\n", id, message);
+  std::print("Debug Message ID: [{}]\nDebug Message: {}\n{:-^50}", id, message,
+             "-");
 }
 } // namespace

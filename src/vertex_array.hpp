@@ -10,10 +10,10 @@ public:
   void create();
   void process_buffers();
 
-  void bind();
-  void unbind();
+  void bind() const;
+  void unbind() const;
 
-  void destroy();
+  void destroy() const;
 
 private:
   uint32_t v_buffer_count = {};
