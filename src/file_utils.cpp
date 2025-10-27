@@ -1,30 +1,28 @@
 #include "file_utils.hpp"
 #include <bit>
 
-std::size_t file_handle_helper::file_size(file_handle &handle) {
+usize file_handle_helper::file_size(file_handle &handle) {
   auto read_size = fseek(&*handle, 0, SEEK_END);
   if (read_size == 0) {
     auto size = ftell(&*handle);
     if (fseek(&*handle, 0, SEEK_SET) == 0) {
-      // rewind(&*handle);
-      return static_cast<std::size_t>(size);
+      return static_cast<usize>(size);
     }
   }
-  return static_cast<std::size_t>(read_size);
+  return static_cast<usize>(read_size);
 }
 
-std::size_t file_handle_helper::file_position(file_handle &handle) {
-  return static_cast<std::size_t>(ftell(&*handle));
+usize file_handle_helper::file_position(file_handle &handle) {
+  return static_cast<usize>(ftell(&*handle));
 }
 
 bool file_handle_helper::is_eof(file_handle &handle) {
   return feof(&*handle) == 0U;
 }
 
-std::vector<uint8_t> file_handle_helper::read_vec_u8(file_handle &handle,
-                                                     uint32_t size) {
+std::vector<u8> file_handle_helper::read_vec_u8(file_handle &handle, u32 size) {
   if (size != 0) {
-    std::vector<uint8_t> ret(size);
+    std::vector<u8> ret(size);
     if (fread(ret.data(), 1, size, &*handle) == size) {
       return ret;
     }
@@ -32,10 +30,10 @@ std::vector<uint8_t> file_handle_helper::read_vec_u8(file_handle &handle,
   return {};
 }
 
-std::vector<uint8_t> file_handle_helper::read_vec_u8(file_handle &handle) {
+std::vector<u8> file_handle_helper::read_vec_u8(file_handle &handle) {
   auto size = read_u64(handle);
   if (size != 0) {
-    std::vector<uint8_t> ret(size);
+    std::vector<u8> ret(size);
     if (fread(ret.data(), 1, size, &*handle) == size) {
       return ret;
     }
@@ -43,8 +41,8 @@ std::vector<uint8_t> file_handle_helper::read_vec_u8(file_handle &handle) {
   return {};
 }
 
-size_t file_handle_helper::write_vec_u8(file_handle &handle,
-                                        std::vector<uint8_t> &vec) {
+usize file_handle_helper::write_vec_u8(file_handle &handle,
+                                        std::vector<u8> &vec) {
   if (write_u64(handle, vec.size()) == vec.size()) {
     if (auto write_size = fwrite(vec.data(), 1, vec.size(), &*handle);
         write_size == vec.size()) {
@@ -54,21 +52,21 @@ size_t file_handle_helper::write_vec_u8(file_handle &handle,
   return 0;
 }
 
-uint8_t file_handle_helper::read_u8(file_handle &handle) {
-  std::array<uint8_t, sizeof(uint8_t)> buffer{};
-  uint8_t value{};
-  if (fread(buffer.data(), 1, sizeof(uint8_t), &*handle) == sizeof(uint8_t)) {
-    memcpy(&value, buffer.data(), sizeof(uint8_t));
+u8 file_handle_helper::read_u8(file_handle &handle) {
+  std::array<u8, sizeof(u8)> buffer{};
+  u8 value{};
+  if (fread(buffer.data(), 1, sizeof(u8), &*handle) == sizeof(u8)) {
+    memcpy(&value, buffer.data(), sizeof(u8));
     return value;
   }
   return 0;
 }
 
-uint16_t file_handle_helper::read_u16(file_handle &handle, bool big_endian) {
-  std::array<uint8_t, sizeof(uint16_t)> buffer{};
-  uint16_t value{};
-  if (fread(buffer.data(), 1, sizeof(uint16_t), &*handle) == sizeof(uint16_t)) {
-    memcpy(&value, buffer.data(), sizeof(uint16_t));
+u16 file_handle_helper::read_u16(file_handle &handle, bool big_endian) {
+  std::array<u8, sizeof(u16)> buffer{};
+  u16 value{};
+  if (fread(buffer.data(), 1, sizeof(u16), &*handle) == sizeof(u16)) {
+    memcpy(&value, buffer.data(), sizeof(u16));
     if (big_endian) {
       return std::byteswap(value);
     }
@@ -77,11 +75,11 @@ uint16_t file_handle_helper::read_u16(file_handle &handle, bool big_endian) {
   return 0;
 }
 
-uint32_t file_handle_helper::read_u32(file_handle &handle, bool big_endian) {
-  std::array<uint8_t, sizeof(uint32_t)> buffer{};
-  uint32_t value{};
-  if (fread(buffer.data(), 1, sizeof(uint32_t), &*handle) == sizeof(uint32_t)) {
-    memcpy(&value, buffer.data(), sizeof(uint32_t));
+u32 file_handle_helper::read_u32(file_handle &handle, bool big_endian) {
+  std::array<u8, sizeof(u32)> buffer{};
+  u32 value{};
+  if (fread(buffer.data(), 1, sizeof(u32), &*handle) == sizeof(u32)) {
+    memcpy(&value, buffer.data(), sizeof(u32));
     if (big_endian) {
       return std::byteswap(value);
     }
@@ -90,11 +88,11 @@ uint32_t file_handle_helper::read_u32(file_handle &handle, bool big_endian) {
   return 0;
 }
 
-uint64_t file_handle_helper::read_u64(file_handle &handle, bool big_endian) {
-  std::array<uint8_t, sizeof(uint64_t)> buffer{};
-  uint64_t value{};
-  if (fread(buffer.data(), 1, sizeof(uint64_t), &*handle) == sizeof(uint64_t)) {
-    memcpy(&value, buffer.data(), sizeof(uint64_t));
+u64 file_handle_helper::read_u64(file_handle &handle, bool big_endian) {
+  std::array<u8, sizeof(u64)> buffer{};
+  u64 value{};
+  if (fread(buffer.data(), 1, sizeof(u64), &*handle) == sizeof(u64)) {
+    memcpy(&value, buffer.data(), sizeof(u64));
     if (big_endian) {
       return std::byteswap(value);
     }
@@ -117,7 +115,7 @@ std::string file_handle_helper::read_z_string(file_handle &handle) {
 
 std::string file_handle_helper::read_u8_string(file_handle &handle) {
   auto size = read_u8(handle);
-  std::vector<uint8_t> buffer(size);
+  std::vector<u8> buffer(size);
 
   if (fread(buffer.data(), 1, size, &*handle) == size) {
     return {buffer.begin(), buffer.end()};
@@ -128,7 +126,7 @@ std::string file_handle_helper::read_u8_string(file_handle &handle) {
 std::string file_handle_helper::read_u16_string(file_handle &handle,
                                                 bool big_endian) {
   auto size = read_u16(handle, big_endian);
-  std::vector<uint8_t> buffer(size);
+  std::vector<u8> buffer(size);
   if (fread(buffer.data(), 1, size, &*handle) == size) {
     return {buffer.begin(), buffer.end()};
   }
@@ -138,59 +136,57 @@ std::string file_handle_helper::read_u16_string(file_handle &handle,
 std::string file_handle_helper::read_u32_string(file_handle &handle,
                                                 bool big_endian) {
   auto size = read_u32(handle, big_endian);
-  std::vector<uint8_t> buffer(size);
+  std::vector<u8> buffer(size);
   if (fread(buffer.data(), 1, size, &*handle) == size) {
     return {buffer.begin(), buffer.end()};
   }
   return {};
 }
 
-std::string file_handle_helper::read_string(file_handle &handle,
-                                            uint64_t size) {
-  std::vector<uint8_t> buffer(size);
-  fread(buffer.data(), 1, size, &*handle);
+std::string file_handle_helper::read_string(file_handle &handle, u64 size) {
+  std::vector<u8> buffer(size);
+  (void)fread(buffer.data(), 1, size, &*handle);
   return {buffer.begin(), buffer.end()};
 }
 
-size_t file_handle_helper::write_u8(file_handle &handle, uint8_t value) {
-  if (auto size = fwrite(&value, 1, sizeof(uint8_t), &*handle);
-      size == sizeof(uint8_t)) {
+usize file_handle_helper::write_u8(file_handle &handle, u8 value) {
+  if (auto size = fwrite(&value, 1, sizeof(u8), &*handle); size == sizeof(u8)) {
     return size;
   }
   return 0;
 }
 
-size_t file_handle_helper::write_u16(file_handle &handle, uint16_t value,
+usize file_handle_helper::write_u16(file_handle &handle, u16 value,
                                      bool big_endian) {
   if (big_endian) {
     value = std::byteswap(value);
   }
-  if (auto size = fwrite(&value, 1, sizeof(uint16_t), &*handle);
-      size == sizeof(uint16_t)) {
+  if (auto size = fwrite(&value, 1, sizeof(u16), &*handle);
+      size == sizeof(u16)) {
     return size;
   }
   return 0;
 }
 
-size_t file_handle_helper::write_u32(file_handle &handle, uint32_t value,
+usize file_handle_helper::write_u32(file_handle &handle, u32 value,
                                      bool big_endian) {
   if (big_endian) {
     value = std::byteswap(value);
   }
-  if (auto size = fwrite(&value, 1, sizeof(uint32_t), &*handle);
-      size == sizeof(uint32_t)) {
+  if (auto size = fwrite(&value, 1, sizeof(u32), &*handle);
+      size == sizeof(u32)) {
     return size;
   }
   return 0;
 }
 
-size_t file_handle_helper::write_u64(file_handle &handle, uint64_t value,
+usize file_handle_helper::write_u64(file_handle &handle, u64 value,
                                      bool big_endian) {
   if (big_endian) {
     value = std::byteswap(value);
   }
-  if (auto size = fwrite(&value, 1, sizeof(uint64_t), &*handle);
-      size == sizeof(uint64_t)) {
+  if (auto size = fwrite(&value, 1, sizeof(u64), &*handle);
+      size == sizeof(u64)) {
     return size;
   }
   return 0;
@@ -204,22 +200,20 @@ bool file_handle_helper::write_z_string(file_handle &handle,
 
 bool file_handle_helper::write_u8_string(file_handle &handle,
                                          const std::string &str) {
-  auto sz_res = write_u8(handle, static_cast<uint8_t>(str.size()));
+  auto sz_res = write_u8(handle, static_cast<u8>(str.size()));
   return (sz_res != 0U) && fputs(str.c_str(), &*handle) != EOF;
 }
 
 bool file_handle_helper::write_u16_string(file_handle &handle,
                                           const std::string &str,
                                           bool big_endian) {
-  auto sz_res =
-      write_u16(handle, static_cast<uint16_t>(str.size()), big_endian);
+  auto sz_res = write_u16(handle, static_cast<u16>(str.size()), big_endian);
   return (sz_res != 0U) && fputs(str.c_str(), &*handle) != EOF;
 }
 
 bool file_handle_helper::write_u32_string(file_handle &handle,
                                           const std::string &str,
                                           bool big_endian) {
-  auto sz_res =
-      write_u32(handle, static_cast<uint32_t>(str.size()), big_endian);
+  auto sz_res = write_u32(handle, static_cast<u32>(str.size()), big_endian);
   return (sz_res != 0U) && fputs(str.c_str(), &*handle) != EOF;
 }

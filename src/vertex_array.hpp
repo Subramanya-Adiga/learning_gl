@@ -1,9 +1,10 @@
 #pragma once
 #include "buffer.hpp"
+#include "defines.hpp"
 
 class VertexArray {
 public:
-  uint32_t id = {};
+  u32 id = {};
   VertexBuffer vbo = {};
   IndexBuffer ibo = {};
 
@@ -16,5 +17,5 @@ public:
   void destroy() const;
 
 private:
-  uint32_t v_buffer_count = {};
+  u32 v_buffer_count = {};
 };

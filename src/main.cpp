@@ -1,5 +1,6 @@
 #include "buffer.hpp"
 #include "buffer_layout.hpp"
+#include "defines.hpp"
 #include "image_utils.hpp"
 #include "sdl_imgui_gl.hpp"
 #include "shader.hpp"
@@ -7,6 +8,7 @@
 #include "vertex_array.hpp"
 #include <glad/glad.h>
 #include <print>
+
 
 static constexpr SDL_FColor clear_color = {
     .r = 0.298F, .g = 0.300F, .b = 0.297F, .a = 1.0F};
@@ -18,7 +20,7 @@ void APIENTRY debug_output(GLenum source, GLenum type, unsigned int id,
                            const void *userParam);
 static bool process_event(SDL_Event * /*e*/);
 
-float vertices[] = {
+f32 vertices[] = {
     /*vert*/ 0.5F,    0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F,
     /*TexCord*/ 1.0F, 1.0F,
     /*vert*/ 0.5F,    -0.5F, 0.0F, /*color*/ 0.8F, 1.0F, 0.5F, 1.0F,
@@ -29,7 +31,7 @@ float vertices[] = {
     /*TexCord*/ 0.0F, 1.0F,
 };
 
-uint32_t indecies[] = {0, 1, 3, 1, 2, 3};
+u32 indecies[] = {0, 1, 3, 1, 2, 3};
 } // namespace
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {

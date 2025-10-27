@@ -4,7 +4,7 @@
 #include <SDL3/SDL_video.h>
 #include <print>
 
-SDLContext init_sdl(const char *name, int32_t width, int32_t height) {
+SDLContext init_sdl(const char *name, i32 width, i32 height) {
   SDLContext ret{};
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS |
                 SDL_INIT_GAMEPAD)) {

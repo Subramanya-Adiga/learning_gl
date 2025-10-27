@@ -1,11 +1,12 @@
 #pragma once
 #include "buffer_layout.hpp"
+#include "defines.hpp"
 
 struct VertexBuffer {
-  uint32_t id = {};
+  u32 id = {};
   BufferLayout layout = {};
 
-  void create(uint32_t size, float *data);
+  void create(const u32 size, const f32 *data);
 
   void bind() const;
   void unbind() const;
@@ -14,10 +15,10 @@ struct VertexBuffer {
 };
 
 struct IndexBuffer {
-  uint32_t id = {};
-  uint32_t count = {};
+  u32 id = {};
+  u32 count = {};
 
-  void create(uint32_t count, uint32_t *data);
+  void create(const u32 count, const u32 *data);
 
   void bind() const;
   void unbind() const;

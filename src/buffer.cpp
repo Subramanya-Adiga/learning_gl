@@ -1,7 +1,7 @@
 #include "buffer.hpp"
 #include <glad/glad.h>
 
-void VertexBuffer::create(uint32_t size, float *data) {
+void VertexBuffer::create(const u32 size, const f32 *data) {
   glCreateBuffers(1, &id);
   glBindBuffer(GL_ARRAY_BUFFER, id);
   glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
@@ -14,11 +14,11 @@ void VertexBuffer::unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
 void VertexBuffer::destroy() const { glDeleteBuffers(1, &id); }
 
-void IndexBuffer::create(uint32_t count, uint32_t *data) {
+void IndexBuffer::create(const u32 count, const u32 *data) {
   this->count = count;
   glCreateBuffers(1, &id);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), data,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->count * sizeof(u32), data,
                GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <glad/glad.h>
+#include "defines.hpp"
 // #include <imgui.h>
 
 struct SDLContext {
@@ -12,7 +13,7 @@ struct SDLContext {
 
 void sdl_check(bool value);
 
-SDLContext init_sdl(const char *name, int32_t width, int32_t height);
+SDLContext init_sdl(const char *name, i32 width, i32 height);
 
 void init_audio(SDLContext *ctx);
 

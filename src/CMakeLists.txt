@@ -12,6 +12,7 @@ target_sources(
   gl_learn
   PRIVATE sdl_imgui_gl.hpp
           sdl_imgui_gl.cpp
+          defines.hpp
           file_utils.hpp
           file_utils.cpp
           image_utils.cpp

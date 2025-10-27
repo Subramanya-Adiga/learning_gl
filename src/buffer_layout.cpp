@@ -4,9 +4,9 @@
 
 namespace {
 struct element_data {
-  uint32_t size = {};
-  uint32_t comp = {};
-  uint32_t gl_type = {};
+  u32 size = {};
+  u32 comp = {};
+  u32 gl_type = {};
 };
 
 element_data get_data(DataType type) {
@@ -41,7 +41,7 @@ element_data get_data(DataType type) {
 
 BufferLayout::BufferLayout(std::initializer_list<BufferElement> elems)
     : elements(elems) {
-  uint32_t offset = 0;
+  u32 offset = 0;
   for (auto &&e : elements) {
     auto [s, c, g] = get_data(e.type);
     e.size = s;

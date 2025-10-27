@@ -1,0 +1,38 @@
+// raddbg 0.9.21 project file
+
+recent_file: path: "src/texture.cpp"
+recent_file: path: "src/main.cpp"
+recent_file: path: "src/buffer_layout.cpp"
+recent_file: path: "src/buffer_layout.hpp"
+recent_file: path: "src/buffer.cpp"
+recent_file: path: "src/buffer.hpp"
+recent_file: path: "src/vertex_array.cpp"
+target:
+{
+  executable: "build/msvc/bin/Debug/gl_learn.exe"
+  working_directory: "build/msvc/bin/Debug"
+  label: MSVC
+  enabled: 0
+}
+target:
+{
+  executable: "build/msvc_ninja/bin/Debug/gl_learn.exe"
+  working_directory: "build/msvc_ninja/bin/Debug"
+  enabled: 1
+  label: Standalone
+}
+breakpoint:
+{
+  source_location: "src/main.cpp:38:1"
+  hit_count: 1
+}
+breakpoint:
+{
+  source_location: "src/main.cpp:64:1"
+  hit_count: 1
+}
+breakpoint:
+{
+  source_location: "src/texture.cpp:38:1"
+  hit_count: 1
+}

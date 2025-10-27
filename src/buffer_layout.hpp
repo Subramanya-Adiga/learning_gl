@@ -1,7 +1,8 @@
 #pragma once
 #include <initializer_list>
+#include "defines.hpp"
 
-enum class DataType : uint8_t {
+enum class DataType : u8 {
   Float,
   Float2,
   Float3,
@@ -19,14 +20,14 @@ struct BufferElement {
   DataType type = {};
   bool normalize = false;
   std::string name;
-  uint32_t size = {};
-  uint32_t component_count = {};
-  uint32_t offset = {};
-  uint32_t gl_type = {};
+  u32 size = {};
+  u32 component_count = {};
+  u32 offset = {};
+  u32 gl_type = {};
 };
 
 struct BufferLayout {
-  uint32_t stride = 0;
+  u32 stride = 0;
   std::vector<BufferElement> elements;
 
   BufferLayout(std::initializer_list<BufferElement> elems);

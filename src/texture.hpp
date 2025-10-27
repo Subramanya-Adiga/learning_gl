@@ -1,10 +1,11 @@
 #pragma once
 #include "image_utils.hpp"
+#include "defines.hpp"
 
-[[nodiscard]] uint32_t texture_slot_count();
+[[nodiscard]] u32 texture_slot_count();
 
 struct Texture {
-  uint32_t id = {};
+  u32 id = {};
 
   void create();
   void update(const ImageData &data) const;

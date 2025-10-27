@@ -18,7 +18,7 @@ static GLenum image_format_to_gl_format(ImagePixelFormat format) {
   return GL_NONE;
 }
 
-uint32_t texture_slot_count() {
+u32 texture_slot_count() {
   int count = {};
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &count);
   return count;

@@ -61,7 +61,7 @@ void Shader::destroy() {
   id = 0;
 }
 
-uint32_t Shader::process_shader(const char *source, GLenum shader_type) {
+u32 Shader::process_shader(const char *source, GLenum shader_type) {
   auto shader = glCreateShader(shader_type);
   glShaderSource(shader, 1, &source, nullptr);
   glCompileShader(shader);

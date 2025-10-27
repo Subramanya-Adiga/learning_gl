@@ -9,7 +9,7 @@ ImageData image_load(std::string_view name) {
                                 [](FILE *file) { (void)fclose(file); });
   auto image_size = file_handle_helper::file_size(image_file);
   auto image_buffer = file_handle_helper::read_vec_u8(
-      image_file, static_cast<uint32_t>(image_size));
+      image_file, static_cast<u32>(image_size));
 
   int x = 0;
   int y = 0;
@@ -50,9 +50,9 @@ ImageData image_load(std::string_view name) {
 
   return {
       .format = format,
-      .width = static_cast<uint32_t>(x),
-      .height = static_cast<uint32_t>(y),
-      .size = static_cast<uint32_t>(image_size),
+      .width = static_cast<u32>(x),
+      .height = static_cast<u32>(y),
+      .size = static_cast<u32>(image_size),
       .data_pointer = data,
   };
 }
