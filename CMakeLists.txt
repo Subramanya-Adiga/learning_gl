@@ -42,7 +42,6 @@ target_precompile_headers(
   <tuple>
   <variant>
   <print>
-  <bit>
   <cstdint>
   <cstring>
   <range/v3/all.hpp>)

@@ -13,8 +13,12 @@ target_sources(
   PRIVATE sdl_imgui_gl.hpp
           sdl_imgui_gl.cpp
           defines.hpp
+          win32_helper.cpp
+          win32_helper.hpp
           file_utils.hpp
           file_utils.cpp
+          known-folders.cpp
+          known-folders.hpp
           image_utils.cpp
           image_utils.hpp
           shader.hpp
