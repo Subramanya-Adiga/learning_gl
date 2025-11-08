@@ -18,6 +18,5 @@ using f32 = float;
 using f64 = double;
 
 #ifdef _WIN64
-static constexpr bool OS_WINDOWS = true;
+#define OS_WINDOWS 1
 #endif
-

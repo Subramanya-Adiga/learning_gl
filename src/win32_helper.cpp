@@ -1,8 +1,4 @@
 #include "win32_helper.hpp"
-#include <bit>
-#include <cstddef>
-#include <stringapiset.h>
-#include <winnls.h>
 
 namespace {
 class win32_error_cat : public std::error_category {

@@ -2,7 +2,6 @@
 #include "defines.hpp"
 #include <Windows.h>
 #include <system_error>
-#include <type_traits>
 
 struct win32_error_code {
   explicit win32_error_code(u32 e) noexcept : error(e) {}
