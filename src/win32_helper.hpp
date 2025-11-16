@@ -19,3 +19,5 @@ std::error_code make_win32_error_code();
 std::error_code make_HRESULT_error_code(HRESULT e);
 
 std::string to_utf8(LPWSTR msg, u32 len);
+
+std::wstring to_wtf8(LPCSTR msg, u32 len);

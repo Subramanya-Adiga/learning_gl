@@ -42,19 +42,17 @@ KNOWNFOLDERID convert(Folders fld) {
   default:
     return {};
   }
-  return {};
 }
 
 std::expected<std::filesystem::path, std::error_code>
 get_win32_path(Folders fld) {
   if (fld == Folders::executable_dir) {
-    std::array<wchar_t, MAX_PATH> file_name = {};
-    auto res = GetModuleFileName(nullptr, file_name.data(), MAX_PATH);
+    wchar_t file_name[MAX_PATH] = {};
+    auto res = GetModuleFileName(nullptr, file_name, MAX_PATH);
     if (res == 0) {
       return std::unexpected{make_win32_error_code()};
     }
-    return std::filesystem::path{to_utf8(file_name.data(), res + 1)}
-        .parent_path();
+    return std::filesystem::path{to_utf8(file_name, res + 1)}.parent_path();
   }
 
   auto val = convert(fld);
@@ -87,5 +85,10 @@ get_win32_path(Folders fld) {
 #endif
 
 std::expected<std::filesystem::path, std::error_code> get_path(Folders folder) {
+#ifdef OS_WINDOWS
   return get_win32_path(folder);
+#endif
+#ifdef OS_LINUX
+  return {};
+#endif
 }

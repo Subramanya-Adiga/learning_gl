@@ -19,4 +19,10 @@ using f64 = double;
 
 #ifdef _WIN64
 #define OS_WINDOWS 1
+#define WIN_VER 0x0A00
+#define _WIN32_WINNT 0x0A00
+#endif
+
+#ifdef __linux__
+#define OS_LINUX 1
 #endif

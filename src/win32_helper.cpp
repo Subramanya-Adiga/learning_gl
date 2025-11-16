@@ -58,3 +58,17 @@ std::string to_utf8(LPWSTR msg, u32 len) {
                             required_len, nullptr, nullptr);
   return to_str;
 }
+
+std::wstring to_wtf8(LPCSTR msg, u32 len) {
+  if (msg == nullptr) {
+    return L"N/A";
+  }
+
+  auto required_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, msg,
+                                          static_cast<int>(len), nullptr, 0);
+
+  std::wstring ret(static_cast<usize>(required_len),0);
+
+  (void)MultiByteToWideChar(CP_UTF8, 0, msg, static_cast<int>(len), &ret[0], required_len);
+  return ret;
+}
