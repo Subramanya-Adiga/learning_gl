@@ -1,9 +1,25 @@
 #pragma once
 #include "defines.hpp"
+#include <expected>
 #include <memory>
+#include <system_error>
 
 using file_deleter = void (*)(FILE *handle);
 using file_handle = std::unique_ptr<FILE, file_deleter>;
+
+class FileHandle {
+  u64 internal_handle;
+
+public:
+  explicit FileHandle(u64 handle);
+  ~FileHandle();
+  FileHandle(const FileHandle &) = delete;
+  FileHandle(FileHandle &&) = default;
+  FileHandle &operator=(const FileHandle &) = delete;
+  FileHandle &operator=(FileHandle &&) = default;
+};
+
+std::expected<HANDLE, std::error_code> test_win32_file();
 
 struct file_handle_helper {
   [[nodiscard]] static usize file_size(file_handle &handle);
