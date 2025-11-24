@@ -7,6 +7,7 @@ public:
     return "Win32Error";
   }
   [[nodiscard]] std::string message(int c) const override {
+    auto errorno = static_cast<u32>(c);
     auto alloc_size = static_cast<usize>(1024 * 64);
     auto *error = static_cast<LPWSTR>(
         HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, alloc_size));
@@ -16,7 +17,9 @@ public:
     }
 
     auto len = FormatMessage(
-        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, c,
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_FROM_HMODULE |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+        GetModuleHandle(L"ntdll.dll"), errorno,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), error, alloc_size, nullptr);
 
     if (len == 0) {
