@@ -21,6 +21,7 @@ using f64 = double;
 #define OS_WINDOWS 1
 #define WIN_VER 0x0A00
 #define _WIN32_WINNT 0x0A00
+#include <Windows.h>
 #endif
 
 #ifdef __linux__
