@@ -13,8 +13,6 @@ target_sources(
   PRIVATE sdl_imgui_gl.hpp
           sdl_imgui_gl.cpp
           defines.hpp
-          win32_helper.cpp
-          win32_helper.hpp
           file_utils.hpp
           file_utils.cpp
           known-folders.cpp
@@ -31,6 +29,14 @@ target_sources(
           vertex_array.hpp
           texture.cpp
           texture.hpp)
+
+if(WIN32)
+  target_sources(
+    gl_learn
+    PRIVATE platform/platform_win32.cpp platform/platform_win32.hpp
+            platform/win32_known_folders.hpp platform/win32_known_folders.cpp
+            platform/win32_file_utils.hpp platform/win32_file_utils.cpp)
+endif()
 
 target_include_directories(gl_learn PRIVATE "${CMAKE_SOURCE_DIR}/vendor/stb")
 

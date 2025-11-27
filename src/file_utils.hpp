@@ -1,5 +1,6 @@
 #pragma once
 #include "defines.hpp"
+#include <compare>
 #include <expected>
 #include <memory>
 #include <system_error>
@@ -17,6 +18,7 @@ public:
   FileHandle(FileHandle &&) = default;
   FileHandle &operator=(const FileHandle &) = delete;
   FileHandle &operator=(FileHandle &&) = default;
+  auto operator<=>(const FileHandle &) const = default;
 };
 
 std::expected<HANDLE, std::error_code> test_win32_file();

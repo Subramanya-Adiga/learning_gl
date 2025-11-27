@@ -1,4 +1,4 @@
-#include "win32_helper.hpp"
+#include "platform_win32.hpp"
 
 namespace {
 class win32_error_cat : public std::error_category {
@@ -70,8 +70,9 @@ std::wstring to_wtf8(LPCSTR msg, u32 len) {
   auto required_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, msg,
                                           static_cast<int>(len), nullptr, 0);
 
-  std::wstring ret(static_cast<usize>(required_len),0);
+  std::wstring ret(static_cast<usize>(required_len), 0);
 
-  (void)MultiByteToWideChar(CP_UTF8, 0, msg, static_cast<int>(len), &ret[0], required_len);
+  (void)MultiByteToWideChar(CP_UTF8, 0, msg, static_cast<int>(len), &ret[0],
+                            required_len);
   return ret;
 }
