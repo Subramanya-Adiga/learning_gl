@@ -1,6 +1,5 @@
 #include "file_utils.hpp"
 #include <bit>
-#include <handleapi.h>
 
 #ifdef OS_WINDOWS
 #include "platform/win32_file_utils.hpp"
@@ -15,9 +14,11 @@ FileHandle::~FileHandle() {
 #endif
 }
 
+#ifdef OS_WINDOWS
 std::expected<HANDLE, std::error_code> test_win32_file() {
   return win32_open_file(R"(\??\C:\Users\subbu\Documents\test.txt)");
 }
+#endif
 
 usize file_handle_helper::file_size(file_handle &handle) {
   auto read_size = fseek(&*handle, 0, SEEK_END);

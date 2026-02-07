@@ -1,4 +1,4 @@
-#include "platform_win32.hpp"
+#include "common.hpp"
 
 namespace {
 class win32_error_cat : public std::error_category {

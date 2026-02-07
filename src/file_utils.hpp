@@ -21,7 +21,9 @@ public:
   auto operator<=>(const FileHandle &) const = default;
 };
 
+#ifdef OS_WINDOWS
 std::expected<HANDLE, std::error_code> test_win32_file();
+#endif
 
 struct file_handle_helper {
   [[nodiscard]] static usize file_size(file_handle &handle);

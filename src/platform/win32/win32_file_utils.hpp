@@ -1,5 +1,5 @@
 #pragma once
-#include "platform_win32.hpp"
+#include "common.hpp"
 #include <expected>
 #include <string_view>
 

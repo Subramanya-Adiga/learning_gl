@@ -4,8 +4,8 @@ add_executable(gl_learn main.cpp)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release" AND (NOT CMAKE_CXX_SIMULATE_ID STREQUAL
                                             "MSVC"))
-  target_compile_options(gl_learn PRIVATE /GL)
-  target_link_options(gl_learn PRIVATE /LTCG)
+    target_compile_options(gl_learn PRIVATE /GL)
+    target_link_options(gl_learn PRIVATE /LTCG)
 endif()
 
 target_sources(
@@ -31,11 +31,25 @@ target_sources(
           texture.hpp)
 
 if(WIN32)
-  target_sources(
+    target_sources(
     gl_learn
-    PRIVATE platform/platform_win32.cpp platform/platform_win32.hpp
-            platform/win32_known_folders.hpp platform/win32_known_folders.cpp
-            platform/win32_file_utils.hpp platform/win32_file_utils.cpp)
+    PRIVATE platform/win32/common.cpp platform/win32/common.hpp
+            platform/win32/win32_known_folders.hpp
+            platform/win32/win32_known_folders.cpp
+            platform/win32/win32_file_utils.hpp
+            platform/win32/win32_file_utils.cpp)
+endif()
+
+
+if(LINUX)
+    target_sources(
+    gl_learn
+    PRIVATE platform/linux/common.cpp
+            platform/linux/common.hpp
+            platform/linux/linux_known_folders.cpp
+            platform/linux/linux_known_folders.hpp
+            platform/linux/linux_file_utils.cpp
+            platform/linux/linux_file_utils.hpp)
 endif()
 
 target_include_directories(gl_learn PRIVATE "${CMAKE_SOURCE_DIR}/vendor/stb")
