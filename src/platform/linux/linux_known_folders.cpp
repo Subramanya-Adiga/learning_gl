@@ -2,9 +2,11 @@
 
 #include "../../known-folders.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <linux/unistd.h>
 #include <pwd.h>
+#include <ranges>
 #include <string>
 #include <unistd.h>
 
@@ -45,33 +47,60 @@ std::string get_home() {
 
 void init() {
   lookup.emplace(static_cast<u8>(Folders::home), get_home());
+  lookup.emplace(static_cast<u8>(Folders::cache), get_home() + "/.cache");
+  lookup.emplace(static_cast<u8>(Folders::local_configuration),
+                 get_home() + "/.config");
+  lookup.emplace(static_cast<u8>(Folders::roaming_configuration),
+                 get_home() + "/.config");
+
+  lookup.emplace(static_cast<u8>(Folders::app_menu),
+                 get_home() + "/.local/share/applications");
+  lookup.emplace(static_cast<u8>(Folders::fonts),
+                 get_home() + "/.local/share/fonts");
+  lookup.emplace(static_cast<u8>(Folders::data), get_home() + "/.local/share");
+
+  lookup.emplace(static_cast<u8>(Folders::global_configuration), "/etc");
+  lookup.emplace(static_cast<u8>(Folders::runtime), "/tmp");
+
+  lookup.emplace(static_cast<u8>(Folders::executable_dir),
+                 std::filesystem::current_path().string());
+
   auto file = std::ifstream(lookup[static_cast<u8>(Folders::home)] +
                             "/.config/user-dirs.dirs");
   if (file.is_open()) {
     std::string line;
     while (std::getline(file, line)) {
-      using std::operator""sv;
-      for (auto &&dat : line | std::ranges::views::split('=') |
-                            std::ranges::views::chunk(2)) {
+      if (!line.contains('#')) {
+        auto pair = line | std::ranges::views::split('=') |
+                    std::ranges::to<std::vector<std::string>>();
 
-        auto first = dat.begin();
-        auto second = dat.end() ;
+        auto first = pair.at(0);
+        auto pos = pair.at(1).find("$HOME");
+        auto second =
+            pair.at(1).replace(pos, 5, lookup[static_cast<u8>(Folders::home)]);
+        second.erase(std::ranges::find(second, '"'));
+        second.erase(std::ranges::find(second, '"'));
 
-        if (std::string_view(first) == "XDG_DESKTOP_DIR") {
+        if (first == "XDG_DESKTOP_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::desktop), second);
         }
-        if (std::string_view(dat) == "XDG_DOWNLOAD_DIR") {
+        if (first == "XDG_DOWNLOAD_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::downloads), second);
         }
-        if (std::string_view(dat) == "XDG_TEMPLATES_DIR") {
+        if (first == "XDG_PUBLICSHARE_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::pub), second);
         }
-        if (std::string_view(dat) == "XDG_PUBLICSHARE_DIR") {
+        if (first == "XDG_DOCUMENTS_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::documents), second);
         }
-        if (std::string_view(dat) == "XDG_DOCUMENTS_DIR") {
+        if (first == "XDG_MUSIC_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::music), second);
         }
-        if (std::string_view(dat) == "XDG_MUSIC_DIR") {
+        if (first == "XDG_PICTURES_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::pictures), second);
         }
-        if (std::string_view(dat) == "XDG_PICTURES_DIR") {
-        }
-        if (std::string_view(dat) == "XDG_VIDEOS_DIR") {
+        if (first == "XDG_VIDEOS_DIR") {
+          lookup.emplace(static_cast<u8>(Folders::videos), second);
         }
       }
     }
