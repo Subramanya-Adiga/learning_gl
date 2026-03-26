@@ -74,6 +74,7 @@ foreach(p LIB BIN INCLUDE CMAKE)
 endforeach()
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/vendor/GLAD")
+add_subdirectory("${CMAKE_SOURCE_DIR}/vendor/imgui")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
 
 if(BUILD_TESTING)

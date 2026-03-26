@@ -1,8 +1,8 @@
 #pragma once
+#include "defines.hpp"
 #include <SDL3/SDL.h>
 #include <glad/glad.h>
-#include "defines.hpp"
-// #include <imgui.h>
+#include <imgui.h>
 
 struct SDLContext {
   bool initialized = false;
@@ -20,14 +20,14 @@ void init_audio(SDLContext *ctx);
 void init_gl(SDLContext *ctx, bool enable_debug = false);
 void gl_debug_function(GLDEBUGPROC debug_function);
 
-// void init_imgui(SDLContext *ctx);
+void init_imgui(SDLContext *ctx);
 
-// void deinit_imgui();
+void deinit_imgui();
 
 void deinit_sdl(SDLContext *ctx);
 
 void deinit_audio(SDLContext *ctx);
 
-// void start_frame();
+void start_frame();
 
-// void flush_frame(SDLContext *ctx);
+void flush_frame(SDLContext *ctx, std::function<void()> render_func);

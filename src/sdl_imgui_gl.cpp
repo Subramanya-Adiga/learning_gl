@@ -1,7 +1,8 @@
 #include "sdl_imgui_gl.hpp"
-// #include <backends/imgui_impl_opengl3.h>
-// #include <backends/imgui_impl_sdl3.h>
 #include <SDL3/SDL_video.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <functional>
 #include <print>
 
 SDLContext init_sdl(const char *name, i32 width, i32 height) {
@@ -94,35 +95,35 @@ void sdl_check(bool value) {
   }
 }
 
-// void init_imgui(SDLContext *ctx) {
-//   IMGUI_CHECKVERSION();
-//   ImGui::CreateContext();
-//   auto &io = ImGui::GetIO();
-//   (void)io;
-//   io.ConfigFlags |=
-//       ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-//   io.ConfigFlags |=
-//       ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
-//   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-//   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+void init_imgui(SDLContext *ctx) {
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  auto &io = ImGui::GetIO();
+  (void)io;
+  io.ConfigFlags |=
+      ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+  io.ConfigFlags |=
+      ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-//   ImGui::StyleColorsDark();
+  ImGui::StyleColorsDark();
 
-//   auto &styles = ImGui::GetStyle();
-//   if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
-//     styles.WindowRounding = 0.0F;
-//     styles.Colors[ImGuiCol_WindowBg].w = 1.0F;
-//   }
+  auto &styles = ImGui::GetStyle();
+  if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
+    styles.WindowRounding = 0.0F;
+    styles.Colors[ImGuiCol_WindowBg].w = 1.0F;
+  }
 
-//   ImGui_ImplSDL3_InitForOpenGL(ctx->window, ctx->gl_context);
-//   ImGui_ImplOpenGL3_Init("#version 130");
-// }
+  ImGui_ImplSDL3_InitForOpenGL(ctx->window, ctx->gl_context);
+  ImGui_ImplOpenGL3_Init("#version 130");
+}
 
-// void deinit_imgui() {
-//   ImGui_ImplOpenGL3_Shutdown();
-//   ImGui_ImplSDL3_Shutdown();
-//   ImGui::DestroyContext();
-// }
+void deinit_imgui() {
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplSDL3_Shutdown();
+  ImGui::DestroyContext();
+}
 
 void deinit_audio(SDLContext *ctx) {
   if (ctx->audio_stream != nullptr) {
@@ -136,30 +137,32 @@ void deinit_sdl(SDLContext *ctx) {
   SDL_Quit();
 }
 
-// void start_frame() {
-//   ImGui_ImplOpenGL3_NewFrame();
-//   ImGui_ImplSDL3_NewFrame();
-//   ImGui::NewFrame();
-// }
+void start_frame() {
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplSDL3_NewFrame();
+  ImGui::NewFrame();
+}
 
-// void flush_frame(SDLContext *ctx) {
-//   auto &io = ImGui::GetIO();
-//   ImGui::Render();
+void flush_frame(SDLContext *ctx, std::function<void()> render_func) {
+  auto &io = ImGui::GetIO();
+  ImGui::Render();
 
-//   glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+  glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 
-//   glClearColor(0.556F, 0.629F, 0.830F, 255.0F);
-//   glClear(GL_COLOR_BUFFER_BIT);
+  glClearColor(0.556F, 0.629F, 0.830F, 255.0F);
+  glClear(GL_COLOR_BUFFER_BIT);
 
-//   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-//   if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
-//     auto *backup_window = SDL_GL_GetCurrentWindow();
-//     auto *backup_context = SDL_GL_GetCurrentContext();
-//     ImGui::UpdatePlatformWindows();
-//     ImGui::RenderPlatformWindowsDefault();
-//     SDL_GL_MakeCurrent(backup_window, backup_context);
-//   }
+  if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
+    auto *backup_window = SDL_GL_GetCurrentWindow();
+    auto *backup_context = SDL_GL_GetCurrentContext();
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
+    SDL_GL_MakeCurrent(backup_window, backup_context);
+  }
 
-//   SDL_GL_SwapWindow(ctx->window);
-// }
+  render_func();
+
+  SDL_GL_SwapWindow(ctx->window);
+}
