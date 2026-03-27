@@ -51,6 +51,17 @@ if(LINUX)
             platform/linux/linux_file_utils.hpp)
 endif()
 
+#Copy Resource Directory To Build Directroy
+set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
+set(DESTINATION_DIR "$<TARGET_FILE_DIR:gl_learn>/resources")
+
+add_custom_target(
+    copy_data_dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${SOURCE_DIR}" "${DESTINATION_DIR}"
+    COMMENT "Copying data directory: ${SOURCE_DIR} to ${DESTINATION_DIR}"
+)
+add_dependencies(gl_learn copy_data_dir)
+
 target_compile_definitions(gl_learn PRIVATE IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
 target_include_directories(gl_learn PRIVATE "${CMAKE_SOURCE_DIR}/vendor/stb")
 

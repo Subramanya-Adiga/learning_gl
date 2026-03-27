@@ -35,7 +35,7 @@ u32 indecies[] = {0, 1, 3, 1, 2, 3};
 } // namespace
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  auto image_data = image_load("wall.jpg");
+  auto image_data = image_load("resources/wall.jpg");
 
   auto ctx = init_sdl("learning_opengl", 1280, 720);
   init_gl(&ctx, true);
@@ -63,7 +63,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   vao.process_buffers();
 
   Shader shader = {};
-  shader.load_from_file("vertex.vert", "fragment.frag");
+  shader.load_from_file("resources/vertex.vert", "resources/fragment.frag");
 
   Texture tex = {};
   tex.create();
