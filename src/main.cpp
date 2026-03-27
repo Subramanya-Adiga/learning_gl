@@ -6,12 +6,10 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "vertex_array.hpp"
+#include <backends/imgui_impl_sdl3.h>
 #include <glad/glad.h>
+#include <imgui.h>
 #include <print>
-
-
-static constexpr SDL_FColor clear_color = {
-    .r = 0.298F, .g = 0.300F, .b = 0.297F, .a = 1.0F};
 
 namespace {
 
@@ -19,6 +17,8 @@ void APIENTRY debug_output(GLenum source, GLenum type, unsigned int id,
                            GLenum severity, GLsizei length, const char *message,
                            const void *userParam);
 static bool process_event(SDL_Event * /*e*/);
+
+f32 square_wave(f32 time, f32 freq, f32 cycles, f32 harmonic);
 
 f32 vertices[] = {
     /*vert*/ 0.5F,    0.5F,  0.0F, /*color*/ 1.0F, 0.5F, 0.8F, 1.0F,
@@ -39,6 +39,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
   auto ctx = init_sdl("learning_opengl", 1280, 720);
   init_gl(&ctx, true);
+  init_audio(&ctx);
+  init_imgui(&ctx);
   gl_debug_function(debug_output);
 
   bool done = false;
@@ -71,31 +73,69 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
     SDL_Event e = {};
 
     done = process_event(&e);
-
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
-    glClear(GL_COLOR_BUFFER_BIT);
+    start_frame();
 
     tex.bind();
     shader.use();
     vao.bind();
 
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vao.ibo.count),
-                   GL_UNSIGNED_INT, nullptr);
+    auto render = [&]() -> void {
+      glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vao.ibo.count),
+                     GL_UNSIGNED_INT, nullptr);
+    };
 
-    SDL_GL_SwapWindow(ctx.window);
+    flush_frame(&ctx, render);
   }
 
   vao.destroy();
   shader.destroy();
   tex.destroy();
+
   destroy_image(image_data);
+  deinit_audio(&ctx);
+  deinit_imgui();
   deinit_sdl(&ctx);
   return 0;
 }
 
 namespace {
+    // auto current_sine_sample = 0.0F;
+    // auto freq = 440.0F;
+    // auto harmonic = 20.0F;
+    // auto cycles = 0.5F;
+    // ImGui::Begin("Audio");
+    // static f32 samples[512];
+    //
+    // if (SDL_GetAudioStreamQueued(ctx.audio_stream) < (2048 * 2)) {
+    //   for (f32 &sample : samples) {
+    //     sample = square_wave(current_sine_sample, freq, cycles, harmonic);
+    //     current_sine_sample++;
+    //   }
+    //   SDL_PutAudioStreamData(ctx.audio_stream, samples, sizeof(samples));
+    // }
+    //
+    // ImGui::PlotLines("WaveForm", samples, IM_ARRAYSIZE(samples), 0, nullptr,
+    //                  -1.0F, 1.0F, {0.0F, 80.0F});
+    // ImGui::SliderFloat("Frequency", &freq, 1.0F, 1000.0F);
+    // ImGui::SliderFloat("Harmonics", &harmonic, 1.0F, 100.0F);
+    // ImGui::SliderFloat("Cycles", &cycles, 0.5F, 100.0F);
+    // ImGui::End();
+f32 square_wave(f32 time, f32 freq, f32 cycles, f32 harmonic) {
+  f32 phase = cycles * 2.0F * SDL_PI_F;
+  f32 wave1 = 0;
+  f32 wave2 = 0;
+
+  for (f32 n = 1; n < harmonic; n++) {
+    f32 sine = n * freq * 2.0F * SDL_PI_F * time / 44100.0F;
+    wave1 += SDL_sinf(sine) / n;
+    wave2 += SDL_sinf(sine - phase * n) / n;
+  }
+  return (2.0F / SDL_PI_F) * (wave1 - wave2);
+}
+
 bool process_event(SDL_Event *e) {
   while (SDL_PollEvent(e)) {
+    ImGui_ImplSDL3_ProcessEvent(e);
     switch (e->type) {
     case SDL_EVENT_QUIT: {
       return true;

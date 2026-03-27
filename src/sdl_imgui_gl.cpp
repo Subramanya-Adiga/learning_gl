@@ -149,7 +149,7 @@ void flush_frame(SDLContext *ctx, std::function<void()> render_func) {
 
   glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 
-  glClearColor(0.556F, 0.629F, 0.830F, 255.0F);
+  glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
   glClear(GL_COLOR_BUFFER_BIT);
 
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

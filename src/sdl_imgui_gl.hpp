@@ -4,6 +4,9 @@
 #include <glad/glad.h>
 #include <imgui.h>
 
+static constexpr SDL_FColor clear_color = {
+    .r = 0.298F, .g = 0.300F, .b = 0.297F, .a = 1.0F};
+
 struct SDLContext {
   bool initialized = false;
   SDL_Window *window = nullptr;
