@@ -2,7 +2,7 @@ include(CTest)
 include(CompilerWarnings)
 include(ccache)
 include(TargetArch)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Export compilation commands" FORCE)
 
 # macro to build parts of project as release
 macro(CHECK_IF_RELEASE)

@@ -30,6 +30,8 @@ target_sources(
           texture.cpp
           texture.hpp)
 
+find_package(SDL3 CONFIG REQUIRED)
+
 if(WIN32)
     target_sources(
     gl_learn
@@ -38,6 +40,12 @@ if(WIN32)
             platform/win32/win32_known_folders.cpp
             platform/win32/win32_file_utils.hpp
             platform/win32/win32_file_utils.cpp)
+         
+    add_custom_command(
+        TARGET gl_learn POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:gl_learn>
+        VERBATIM
+    )
 endif()
 
 if(LINUX)
@@ -64,8 +72,6 @@ add_dependencies(gl_learn copy_data_dir)
 
 target_compile_definitions(gl_learn PRIVATE IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
 target_include_directories(gl_learn PRIVATE "${CMAKE_SOURCE_DIR}/vendor/stb")
-
-find_package(SDL3 CONFIG REQUIRED)
 
 target_link_libraries(gl_learn PRIVATE project_options project_dependency GLAD
                                        SDL3::SDL3 DearImGui)
