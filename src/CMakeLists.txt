@@ -31,6 +31,7 @@ target_sources(
           texture.hpp)
 
 find_package(SDL3 CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 if(WIN32)
     target_sources(
@@ -74,4 +75,4 @@ target_compile_definitions(gl_learn PRIVATE IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
 target_include_directories(gl_learn PRIVATE "${CMAKE_SOURCE_DIR}/vendor/stb")
 
 target_link_libraries(gl_learn PRIVATE project_options project_dependency GLAD
-                                       SDL3::SDL3 DearImGui)
+                                       SDL3::SDL3 DearImGui glm::glm-header-only)

@@ -23,6 +23,17 @@ void VertexArray::process_buffers() {
     }
     case DataType::Mat3:
     case DataType::Mat4: {
+      auto count = layout.component_count;
+      for (u32 i = 0; i < layout.component_count; i++) {
+        glEnableVertexAttribArray(v_buffer_count);
+        glVertexAttribPointer(
+            v_buffer_count, static_cast<GLint>(count), layout.gl_type,
+            layout.normalize ? GL_TRUE : GL_FALSE,
+            static_cast<GLint>(vbo.layout.stride),
+            (const void *)(layout.offset + sizeof(f32) * count * i));
+        glVertexAttribDivisor(v_buffer_count, 1);
+        v_buffer_count++;
+      }
       break;
     }
     case DataType::Int:

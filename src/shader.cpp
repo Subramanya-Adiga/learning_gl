@@ -1,5 +1,6 @@
 #include "shader.hpp"
 #include "file_utils.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <print>
 #include <string_view>
 
@@ -59,6 +60,50 @@ void Shader::use() const { glUseProgram(id); }
 void Shader::destroy() {
   glDeleteProgram(id);
   id = 0;
+}
+
+void Shader::uploadUniformInt(const char *name, u32 value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniform1i(loc, static_cast<GLint>(value));
+}
+
+void Shader::uploadUniformIntArray(const char *name,
+                                   std::span<int> value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniform1iv(loc, static_cast<GLsizei>(value.size()), value.data());
+}
+
+void Shader::uploadUniformFloat(const char *name, f32 value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniform1f(loc, value);
+}
+
+void Shader::uploadUniformFloat2(const char *name,
+                                 const glm::vec2 &value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniform2f(loc, value.x, value.y);
+}
+
+void Shader::uploadUniformFloat3(const char *name,
+                                 const glm::vec3 &value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniform3f(loc, value.x, value.y, value.z);
+}
+
+void Shader::uploadUniformFloat4(const char *name,
+                                 const glm::vec4 &value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniform4f(loc, value.x, value.y, value.z, value.w);
+}
+
+void Shader::uploadUniformMat3(const char *name, const glm::mat3 &value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::uploadUniformMat4(const char *name, const glm::mat4 &value) const {
+  auto loc = glGetUniformLocation(id, name);
+  glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 u32 Shader::process_shader(const char *source, GLenum shader_type) {
