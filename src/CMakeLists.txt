@@ -54,9 +54,9 @@ if(LINUX)
     PRIVATE platform/linux/common.cpp
             platform/linux/common.hpp
             platform/linux/linux_known_folders.cpp
-            platform/linux/linux_known_folders.hpp
-            platform/linux/linux_file_utils.cpp
-            platform/linux/linux_file_utils.hpp)
+            platform/linux/linux_known_folders.hpp)
+            # platform/linux/linux_file_utils.cpp
+            # platform/linux/linux_file_utils.hpp)
 endif()
 
 #Copy Resource Directory To Build Directroy
