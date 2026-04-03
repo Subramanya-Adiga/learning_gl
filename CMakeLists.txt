@@ -78,13 +78,13 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/vendor/imgui")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
 
 add_custom_target(
-    copy_compile_commands ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/compile_commands.json"
-            "${CMAKE_SOURCE_DIR}/compile_commands.json"
-    DEPENDS ${CMAKE_BINARY_DIR}/compile_commands.json
-    COMMENT "Copying compile_commands.json to source directory"
-)
+  copy_compile_commands ALL
+  COMMAND
+    ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_BINARY_DIR}/compile_commands.json"
+    "${CMAKE_SOURCE_DIR}/compile_commands.json"
+  DEPENDS ${CMAKE_BINARY_DIR}/compile_commands.json
+  COMMENT "Copying compile_commands.json to source directory")
 
 add_dependencies(copy_compile_commands project_options)
 
