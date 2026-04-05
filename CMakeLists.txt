@@ -6,18 +6,19 @@ project(
   LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+
 if(WIN32)
   list(APPEND CMAKE_MODULE_PATH $ENV{SDL3_DIR})
 endif()
+
+include(FetchContent)
 include(StanderdProjectSettings)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_23)
 
-if((CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") OR (CMAKE_CXX_SIMULATE_ID STREQUAL
-                                               "MSVC"))
-  target_compile_options(project_options INTERFACE /arch:AVX2)
+if(MINGW OR MSVC)
   target_compile_definitions(project_options INTERFACE _CRT_SECURE_NO_WARNINGS
                                                        NOMINMAX UNICODE)
 endif()
@@ -44,10 +45,7 @@ target_precompile_headers(
   <print>
   <cstdint>
   <cstring>
-  <range/v3/all.hpp>)
-
-find_package(range-v3 REQUIRED)
-target_link_libraries(project_dependency INTERFACE range-v3::range-v3)
+  <functional>)
 
 message(STATUS "Project will be installed to ${CMAKE_INSTALL_PREFIX}")
 include(GNUInstallDirs)
@@ -89,8 +87,12 @@ add_custom_target(
 add_dependencies(copy_compile_commands project_options)
 
 if(BUILD_TESTING)
-  find_package(Catch2 REQUIRED)
-  include(Catch)
+  FetchContent_Declare(
+    catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG "v3.13.0")
+  FetchContent_MakeAvailable(catch2)
+
   add_subdirectory("${CMAKE_SOURCE_DIR}/tests")
 
 endif()

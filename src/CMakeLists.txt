@@ -38,6 +38,7 @@ FetchContent_Declare(
   spdlog
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
   GIT_TAG "v1.17.0")
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 FetchContent_Declare(
   glm
   GIT_REPOSITORY https://github.com/icaven/glm.git
