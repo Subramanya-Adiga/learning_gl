@@ -1,6 +1,5 @@
 #pragma once
 #include "../../defines.hpp"
-#include <Windows.h>
 #include <system_error>
 
 struct win32_error_code {

@@ -1,7 +1,7 @@
 #include "win32_known_folders.hpp"
 
-#include "../known-folders.hpp"
-#include <ShlObj.h>
+#include "../../known-folders.hpp"
+#include <shlobj.h>
 #include <strsafe.h>
 
 namespace {
